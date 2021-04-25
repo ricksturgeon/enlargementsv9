@@ -66,6 +66,40 @@
             , 'png': 'image/png'
         }
 
+        function getPassword () {
+            let params = {
+                CiphertextBlob: Buffer.from(db_pass, 'base64')
+            }
+           
+            let secret = null
+            try {
+                const decrypted = kms.decrypt(params).promise()
+                secret = decrypted.Plaintext.toString('utf-8')
+                console.log(secret);
+                return (secret);
+            }
+            catch (exception) {
+                console.error(exception)
+            }
+        }
+        
+        
+        async function decryptEncodedstring(encoded) {
+         
+            const paramsDecrypt = kms.DecryptRequest = {
+                CiphertextBlob: Buffer.from(encoded, 'base64')
+            };
+         
+            const decryptResult = await kms.decrypt(paramsDecrypt).promise();
+            if (Buffer.isBuffer(decryptResult.Plaintext)) {
+                var result =  Buffer.from(decryptResult.Plaintext).toString();
+                console.log(result);
+                return result
+            } else {
+                throw new Error('We have a problem');
+            }
+        }
+
         createSoapClient = function (req, res, callback) {
             if (configData.soapClient) {
                 if (callback) callback(null, soapClient);

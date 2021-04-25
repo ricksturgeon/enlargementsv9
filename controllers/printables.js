@@ -35,15 +35,15 @@
 
 
 const moment = require('moment')
-  , aws = require("aws-sdk")
-  , ses = new aws.SES({ region: process.env.AWS_Region })
+  , AWS = require("aws-sdk")
+  , ses = new AWS.SES({ region: process.env.AWS_Region })
   , config = require('../config/config')
   // , async = require('async')
   , schedule = require('node-schedule')
   // , request = require('request')
-  , sqs = new aws.SQS({apiVersion: "2012-11-05"})
+  , sqs = new AWS.SQS({apiVersion: "2012-11-05"})
   , utils = require('../lib/utils')
-  , kms = new aws.KMS()
+  , kms = new AWS.KMS()
   , pg = require('pg')
   // , extend = require('util')._extend
   // , ObjectId = require('mongoose').Types.ObjectId
@@ -74,6 +74,17 @@ var zfsetup = {
   , appName: 'Flower Architect'
 };
 
+const db_host =  "flowerarchitect-dev.cst0vhjauoal.us-west-2.rds.amazonaws.com"
+    ,db_user = "flowerAdmin"
+    ,db_pass = "AQICAHiMXff54+zBNuwXv5vJmGt6YVQKeo6P5DdyB5f92HwLAgFMxwtW+XWER5X+iOBeWJuLAAAAbDBqBgkqhkiG9w0BBwagXTBbAgEAMFYGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMKdMhsfeIYj85w7UzAgEQgCkN8CThlxJlOwm/WGNFMa5/vOlBpaKAnW1c6/yeVJaQ7qWCO/76xFSRLQ=="
+    ,db_name = "flowerarranger"
+    ,db_port = "5432"
+    ,db_region = "us-west-2"
+    ,db_proxy_endpoint = "postgresql-dev-flowerarchitect-proxy.proxy-cst0vhjauoal.us-west-2.rds.amazonaws.com"
+    ,aws_region = "us-west-2"
+    ,flw_enlargements_que_url = "https://sqs.us-west-2.amazonaws.com/376297935970/flw_enlargements.fifo";
+
+
 var calltype = 'scheduler';
 
 var rootZenfolio = '851257442';
@@ -97,6 +108,61 @@ var canvas_width = 0;
 var canvas_height = 0;
 
 var errorValue = '';
+
+async function email(SourceEmailAddress, RecipientEmailAddress) {
+  var params = {
+      Destination: {
+          ToAddresses: [RecipientEmailAddress],
+      },
+      Message: {
+          Body: {
+              Text: { Data: "Test" },
+          },
+
+          Subject: { Data: "Test Email" },
+      },
+      Source: SourceEmailAddress,
+  };
+
+  return ses.sendEmail(params).promise()
+};
+
+
+// exports.handler = async (event, context, callback) => {
+exports.handler = async (event, context, callback) => {
+  var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+  var arrangementId = event['arr-id'];
+  var lang = event['lang'];
+
+  console.log('started execution')
+
+  console.log(await decryptEncodedstring(db_pass))
+  const pool = new pg.Pool({
+      host: db_host,
+      port: db_port,
+      user: db_user,
+      database: db_name,
+      password: await decryptEncodedstring(db_pass)
+  })
+  async function query (q,p) {
+      const client = await pool.connect();
+      let res;
+      try {
+          await client.query('BEGIN');
+          try {
+              res = await client.query(q,p)
+              await client.query('COMMIT');
+          } catch (err) {
+              await client.query('ROLLBACK');
+              throw err;
+          }
+      } finally {
+          client.release();
+      }
+      return res;
+  }
+
+
 // var
   // async = require('async'),
   // fs = require('fs'),

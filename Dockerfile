@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:12.11
 
 # Create app directory
 WORKDIR /usr/ricksturgeon/enlargementsV9

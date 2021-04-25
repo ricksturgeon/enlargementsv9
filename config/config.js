@@ -107,5 +107,44 @@ module.exports = {
         password: '@2lexAndriP',
         appName: "Flower Architect"
     },
-    production: {}
+    languagesNames = {
+        "Arabic" : "ar",
+        "Chinese": "zh",
+        "Danish": "da",
+        "Dutch": "nl",
+        "English": "en",
+        "Finnish": "fi",
+        "French": "fr",
+        "German": "de",
+        "Hindi": "hi",
+        "Italian": "it",
+        "Japanese": "ja",
+        "Korean": "ko",
+        "Pakistan": "ur",
+        "Polish": "pl",
+        "Portuguese": "pt",
+        "Russian": "ru",
+        "Spanish": "es",
+        "Vietnamese": "vn"
+    },
+    languagesCodes = {
+        "ar": "Arabic",
+        "zh": "Chinese",
+        "da": "Danish",
+        "nl": "Dutch",
+        "en": "English",
+        "fi": "Finnish",
+        "fr": "French",
+        "de": "German",
+        "hi": "Hindi",
+        "it": "Italian",
+        "ja": "Japanese",
+        "ko": "Korean",
+        "ur": "Pakistan",
+        "pl": "Polish",
+        "pt": "Portuguese",
+        "ru": "Russian",
+        "es": "Spanish",
+        "vn": "Vietnamese"
+    }
 }
